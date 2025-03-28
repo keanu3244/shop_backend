@@ -1,0 +1,10 @@
+{
+  "extends": "eslint-config-egg",
+  "root": true,
+  "rules": {
+    "quotes": "off", // 完全关闭规则
+    // 允许单参数加括号（"always" 表示强制加括号）
+    "arrow-parens": ["error", "as-needed"], // 默认推荐（单参数不加括号）
+    "arrow-parens": "off"
+  }
+}
