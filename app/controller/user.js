@@ -98,7 +98,6 @@ class UserController extends Controller {
         return this.#response({
           status: "error",
           message: "用户名或密码错误",
-          httpStatus: 400,
         });
       }
 
@@ -108,7 +107,6 @@ class UserController extends Controller {
         return this.#response({
           status: "error",
           message: "用户名或密码错误",
-          httpStatus: 400,
         });
       }
 
@@ -123,7 +121,6 @@ class UserController extends Controller {
         status: "ok",
         message: "登录成功",
         data: { username: user.username, role: user.role, token },
-        httpStatus: 200,
       });
     } catch (error) {
       this.#response({
@@ -131,6 +128,39 @@ class UserController extends Controller {
         message: error.message,
         httpStatus: 500,
       });
+    }
+  }
+  // 验证 token 接口
+  async verify() {
+    const { ctx, service } = this;
+
+    // token 验证已在中间件中完成，用户信息存储在 ctx.state.user
+    const { id } = ctx.state.user;
+    try {
+      // 根据用户 ID 查找用户
+      const user = await service.auth.findUserById(id);
+      ctx.body = {
+        status: "ok",
+        user: {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+        },
+      };
+      this.#response({
+        status: "ok",
+        message: "验证成功",
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+          },
+        },
+      });
+    } catch (error) {
+      ctx.status = 404;
+      ctx.body = { status: "error", message: error.message };
     }
   }
 }

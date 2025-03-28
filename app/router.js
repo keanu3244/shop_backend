@@ -5,10 +5,13 @@
 module.exports = (app) => {
   const { router, controller, middleware } = app;
   const jwt = middleware.jwt(app.config.jwt); // 导入并初始化 jwt 中间件
+  const auth = middleware.auth(); // 使用认证中间件
 
   router.get("/", controller.home.index);
   router.post("/user/register", controller.user.register);
   router.post("/user/login", controller.user.login);
+  // 验证 token 路由
+  router.get("/user/verify", auth, controller.user.verify);
   // 分类相关路由
   router.post("/categories", jwt, controller.category.create); // 创建分类
   router.get("/categories", controller.category.list); // 获取分类列表
