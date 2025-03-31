@@ -13,7 +13,8 @@
     "egg-jwt": "^3.1.7",
     "egg-multipart": "^3.5.0",
     "egg-mysql": "^5.0.0",
-    "egg-scripts": "2"
+    "egg-scripts": "2",
+    "tronweb": "^5.3.3"
   },
   "devDependencies": {
     "egg-bin": "6",

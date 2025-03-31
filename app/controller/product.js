@@ -9,10 +9,18 @@ class ProductController extends Controller {
   // 上传商品
   async upload() {
     const { ctx } = this;
-    const { title, stock, category, description, price } = ctx.request.body;
+    const {
+      title,
+      stock,
+      categoryId,
+      description,
+      price,
+      supportedPaymentMethods,
+    } = ctx.request.body;
     const file = ctx.request.files[0];
 
-    if (!title || !stock || !category || !file || !price) {
+    // 验证必填字段
+    if (!title || !stock || !categoryId || !file || !price) {
       ctx.body = {
         code: 200,
         status: "error",
@@ -65,12 +73,31 @@ class ProductController extends Controller {
       return;
     }
 
-    const categoryExists = await ctx.service.category.findByName(category);
+    // 验证分类是否存在
+    const categoryExists = await ctx.service.category.findById(categoryId);
     if (!categoryExists) {
       ctx.body = {
         code: 200,
         status: "error",
         message: "分类不存在",
+      };
+      ctx.status = 400;
+      return;
+    }
+
+    // 验证支付方式
+    const validMethods = ["wechat", "alipay", "usdt", "trx", "bank_card"];
+    const finalPaymentMethods =
+      supportedPaymentMethods &&
+      Array.isArray(supportedPaymentMethods) &&
+      supportedPaymentMethods.length > 0
+        ? supportedPaymentMethods
+        : ["wechat", "alipay"]; // 设置默认值
+
+    if (!finalPaymentMethods.every((method) => validMethods.includes(method))) {
+      ctx.body = {
+        status: "error",
+        message: "无效的支付方式",
       };
       ctx.status = 400;
       return;
@@ -84,18 +111,19 @@ class ProductController extends Controller {
       const filePath = path.join(uploadDir, fileName);
       await fs.copyFile(file.filepath, filePath);
 
-      const imageUrl = `/public/uploads/${fileName}`;
+      const imageUrl = `/public/uploads/${fileName}`; // 相对路径
 
       const product = await ctx.service.product.create({
         title,
         imageUrl,
         stock: stockNum,
-        category,
+        categoryId,
         merchantId: user.id,
         description,
         price: priceNum,
+        supportedPaymentMethods: finalPaymentMethods,
       });
-
+      console.log("product=>>>>>>", product);
       ctx.body = {
         code: 200,
         status: "ok",
@@ -103,15 +131,17 @@ class ProductController extends Controller {
         data: {
           id: product.id,
           title: product.title,
-          imageUrl: product.imageUrl, // 使用完整路径
+          imageUrl: `${this.config.baseUrl}${product.imageUrl}`, // 返回完整 URL
           stock: product.stock,
-          category: product.category,
+          categoryId: product.category_id,
           description: product.description,
           price: product.price,
+          supportedPaymentMethods: product.supported_payment_methods,
         },
       };
       ctx.status = 201;
     } catch (error) {
+      ctx.logger.error("商品上传失败:", error.message);
       ctx.body = {
         code: 200,
         status: "error",

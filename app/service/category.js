@@ -33,9 +33,9 @@ class CategoryService extends Service {
     }));
   }
 
-  async findByName(name) {
+  async findById(id) {
     const { app } = this;
-    return await app.mysql.get("categories", { name });
+    return await app.mysql.get("categories", { id });
   }
 }
 

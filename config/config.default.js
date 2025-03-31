@@ -56,6 +56,33 @@ module.exports = (appInfo) => {
     whitelist: [".jpg", ".jpeg", ".png", ".gif"], // 允许的文件类型
   };
 
+  // 添加 TronGrid 配置
+  config.tron = {
+    fullNode: "https://api.shasta.trongrid.io", // 测试网
+    solidityNode: "https://api.shasta.trongrid.io",
+    eventServer: "https://api.shasta.trongrid.io",
+    apiKey: "29715be8-3b1f-4ef5-a9e9-a3bddc81415b", // 替换为你的 API Key
+  };
+
+  // config.wechatPay = {
+  //   appid: "your_wechat_appid",
+  //   mchid: "your_wechat_mchid",
+  //   privateKey: "your_wechat_private_key",
+  //   serialNo: "your_wechat_serial_no",
+  //   certPath: "path/to/your/wechat/apiclient_cert.pem",
+  //   keyPath: "path/to/your/wechat/apiclient_key.pem",
+  // };
+
+  // config.alipay = {
+  //   appId: "your_alipay_appid",
+  //   privateKey: "your_alipay_private_key",
+  //   alipayPublicKey: "your_alipay_public_key",
+  //   gateway: "https://openapi.alipaydev.com/gateway.do",
+  // };
+
+  // 添加 baseUrl 配置
+  config.baseUrl = "http://localhost:7001";
+
   return {
     ...config,
     ...userConfig,

@@ -18,4 +18,10 @@ module.exports = (app) => {
   // 商品相关路由
   router.post("/products", jwt, controller.product.upload);
   router.get("/products", controller.product.list);
+  // 支付相关路由
+  router.post("/payment/create", auth, controller.payment.createOrder);
+  router.get("/payment/check", auth, controller.payment.checkPayment);
+  // 商家信息路由
+  router.get("/merchant/info", auth, controller.merchant.info);
+  router.post("/merchant/update", auth, controller.merchant.update);
 };
