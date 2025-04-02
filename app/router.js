@@ -24,4 +24,11 @@ module.exports = (app) => {
   // 商家信息路由
   router.get("/merchant/info", auth, controller.merchant.info);
   router.post("/merchant/update", auth, controller.merchant.update);
+  // 订单相关
+  router.post("/orders", jwt, controller.orders.create);
+  router.get("/orders/:id", jwt, controller.orders.get);
+  router.post("/orders/:id/cancel", jwt, controller.orders.cancel);
+  router.post("/orders/:id/confirm", jwt, controller.orders.confirmPayment); // 新增：确认付款
+  router.post("/orders/:id/ship", jwt, controller.orders.ship); // 新增：商家发货
+  router.get("/messages/history", jwt, controller.message.history);
 };

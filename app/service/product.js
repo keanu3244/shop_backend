@@ -101,6 +101,31 @@ class ProductService extends Service {
       throw error;
     }
   }
+
+  async findById(id) {
+    const { app, ctx } = this;
+    try {
+      const product = await app.mysql.get("products", { id });
+      if (!product) {
+        throw new Error("商品不存在");
+      }
+
+      return {
+        id: product.id,
+        title: product.title,
+        imageUrl: `${ctx.request.protocol}://${ctx.request.host}${product.image_url}`,
+        stock: product.stock,
+        categoryId: product.category_id,
+        description: product.description,
+        price: product.price,
+        supportedPaymentMethods: product.supported_payment_methods,
+        merchant_id: product.merchant_id,
+      };
+    } catch (error) {
+      ctx.logger.error("获取商品失败:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ProductService;

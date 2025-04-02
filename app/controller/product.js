@@ -123,7 +123,6 @@ class ProductController extends Controller {
         price: priceNum,
         supportedPaymentMethods: finalPaymentMethods,
       });
-      console.log("product=>>>>>>", product);
       ctx.body = {
         code: 200,
         status: "ok",
