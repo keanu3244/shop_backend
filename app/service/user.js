@@ -46,6 +46,31 @@ class UserService extends Service {
     const user = await app.mysql.get("users", { username });
     return user;
   }
+
+  // 根据用户id查找用户
+  async findById(id) {
+    const { app } = this;
+    return await app.mysql.get("users", { id });
+  }
+
+  async updatePaymentInfo(userId, paymentInfo) {
+    const key = Object.keys(paymentInfo)[0];
+    const { app } = this;
+    const ori_result = await app.mysql.select("users", {
+      columns: ["payment_info"],
+      where: { id: userId },
+    });
+    const ori_paymentInfo = JSON.parse(ori_result[0].payment_info) || {};
+    ori_paymentInfo[key] = paymentInfo[key];
+    const result = await app.mysql.update(
+      "users",
+      { payment_info: JSON.stringify(ori_paymentInfo) },
+      { where: { id: userId } }
+    );
+    if (result.affectedRows !== 1) {
+      throw new Error("更新收款信息失败");
+    }
+  }
 }
 
 module.exports = UserService;

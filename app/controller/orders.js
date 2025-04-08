@@ -102,8 +102,8 @@ class OrderController extends Controller {
         order.status === "pending" &&
         new Date() > new Date(order.payment_deadline)
       ) {
-        await ctx.service.orders.updateStatus(id, "failed");
-        order.status = "failed";
+        await ctx.service.orders.updateStatus(id, "cancelled");
+        order.status = "cancelled";
       }
 
       ctx.body = {

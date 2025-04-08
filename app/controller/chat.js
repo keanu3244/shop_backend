@@ -4,7 +4,7 @@
 const Controller = require("egg").Controller;
 
 class ChatController extends Controller {
-  async index() {
+  async ping() {
     const { ctx, app } = this;
     const socket = ctx.socket;
     const user = socket.user;

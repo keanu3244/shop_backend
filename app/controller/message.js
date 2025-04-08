@@ -7,13 +7,10 @@ class MessageController extends Controller {
   async history() {
     const { ctx } = this;
     const user = ctx.state.user;
-    const { targetId } = ctx.query;
+    const { roomId } = ctx.query;
 
     try {
-      const messages = await ctx.service.message.getHistory(
-        user.id,
-        targetId || 0
-      );
+      const messages = await ctx.service.message.getHistory(roomId || 0);
       ctx.body = {
         status: "ok",
         data: messages,

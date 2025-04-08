@@ -14,7 +14,29 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + "_1742982972543_3145";
 
   // add your middleware config here
-  config.middleware = ["errorHandler"];
+  config.middleware = ["auth", "errorHandler"];
+
+  config.io = {
+    init: {
+      cors: {
+        origin: "*", // 允许的客户端来源
+        methods: ["GET", "POST"],
+        credentials: true,
+      },
+      wsEngine: "ws",
+      perMessageDeflate: false,
+    }, // passed to engine.io
+    namespace: {
+      "/": {
+        connectionMiddleware: ["auth"],
+        packetMiddleware: [],
+      },
+    },
+    // generateId: req => {
+    //   const data = qs.parse(req.url.split('?')[1]);
+    //   return data.userId; // custom id must be unique
+    // },
+  };
 
   // add your user config here
   const userConfig = {

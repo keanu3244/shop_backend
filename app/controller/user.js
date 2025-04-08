@@ -116,11 +116,17 @@ class UserController extends Controller {
         ctx.app.config.jwt.secret,
         { expiresIn: "24h" }
       );
-
+      console.log("user>>>", user);
       this.#response({
         status: "ok",
         message: "登录成功",
-        data: { username: user.username, role: user.role, token },
+        data: {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          token,
+          paymentInfo: JSON.parse(user.payment_info || "{}"),
+        },
       });
     } catch (error) {
       this.#response({
@@ -135,6 +141,7 @@ class UserController extends Controller {
     const { ctx, service } = this;
 
     // token 验证已在中间件中完成，用户信息存储在 ctx.state.user
+    console.log("ctx.state.user", ctx.state);
     const { id } = ctx.state.user;
     try {
       // 根据用户 ID 查找用户
@@ -161,6 +168,45 @@ class UserController extends Controller {
     } catch (error) {
       ctx.status = 404;
       ctx.body = { status: "error", message: error.message };
+    }
+  }
+
+  async updatePaymentInfo() {
+    const { ctx } = this;
+    console.log("ctx.state.user", ctx.state.user);
+    const userId = ctx.state.user.id;
+    const { paymentInfo } = ctx.request.body;
+
+    if (!paymentInfo) {
+      ctx.body = { status: "error", message: "缺少收款信息" };
+      ctx.status = 400;
+      return;
+    }
+
+    try {
+      const user = await ctx.service.user.findById(userId);
+      if (!user) {
+        ctx.body = { status: "error", message: "用户不存在" };
+        ctx.status = 404;
+        return;
+      }
+
+      if (user.role !== "merchant") {
+        ctx.body = { status: "error", message: "无权限设置收款信息" };
+        ctx.status = 403;
+        return;
+      }
+
+      await ctx.service.user.updatePaymentInfo(userId, paymentInfo);
+      ctx.body = { status: "ok", message: "收款信息更新成功" };
+      ctx.status = 200;
+    } catch (error) {
+      ctx.logger.error("更新收款信息失败:", error.message);
+      ctx.body = {
+        status: "error",
+        message: error.message || "更新收款信息失败",
+      };
+      ctx.status = 500;
     }
   }
 }

@@ -13,9 +13,11 @@
     "egg-jwt": "^3.1.7",
     "egg-multipart": "^3.5.0",
     "egg-mysql": "^5.0.0",
+    "egg-schedule": "^4.0.1",
     "egg-scripts": "2",
-    "socket.io": "^4.8.1",
-    "tronweb": "^5.3.3"
+    "egg-socket.io": "^4.1.6",
+    "tronweb": "^5.3.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "egg-bin": "6",
@@ -29,7 +31,7 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-shop-backend",
     "stop": "egg-scripts stop --title=egg-server-shop-backend",
-    "dev": "egg-bin dev",
+    "dev": "egg-bin dev --sticky",
     "test": "npm run lint -- --fix && npm run test:local",
     "test:local": "egg-bin test",
     "cov": "egg-bin cov",

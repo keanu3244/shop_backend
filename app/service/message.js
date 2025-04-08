@@ -8,7 +8,6 @@ class MessageService extends Service {
     const { app } = this;
     const result = await app.mysql.insert("messages", {
       sender_id: senderId,
-      receiver_id: receiverId, // 可能为 null
       content,
     });
     if (result.affectedRows !== 1) {
@@ -23,18 +22,22 @@ class MessageService extends Service {
     };
   }
 
-  async getHistory(userId, targetId) {
+  async getHistory(roomId) {
     const { app } = this;
-    return await app.mysql.select("messages", {
-      where: {
-        OR: [
-          { sender_id: userId, receiver_id: targetId },
-          { sender_id: targetId, receiver_id: userId },
-          { sender_id: userId, receiver_id: null }, // 广播消息
-        ],
-      },
-      orders: [["created_at", "asc"]],
-    });
+    try {
+      const query = `
+      SELECT *
+      FROM messages
+      WHERE room_id = ?
+      ORDER BY created_at ASC
+    `;
+      const results = await app.mysql.query(query, [roomId]);
+
+      return results;
+    } catch (err) {
+      console.error("查询历史消息失败:", err.message);
+      throw err;
+    }
   }
 }
 
