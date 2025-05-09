@@ -1,7 +1,7 @@
 // app/middleware/auth.js
 module.exports = (options, app) => {
   return async function auth(ctx, next) {
-    const white = ["/user/login", "/user/register"];
+    const white = ["/user/login", "/user/register", "/"];
     if (white.includes(ctx.url)) {
       await next();
       return;
